@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outbound Data & Deliverability Audit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandDark: '#005a86',
+            brandBlue: '#34a9df',
+            brandOrange: '#ff914d'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #002236;
+      color: #ffffff;
+    }
+    .glass-card {
+      background: rgba(0, 90, 134, 0.35);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(52, 169, 223, 0.25);
+    }
+    .btn-orange {
+      background-color: #ff914d;
+      color: #ffffff;
+      transition: all 0.3s ease;
+    }
+    .btn-orange:hover {
+      background-color: #e07d3b;
+      box-shadow: 0 8px 20px -4px rgba(255, 145, 77, 0.5);
+      transform: translateY(-2px);
+    }
+    .progress-bar-fill {
+      transition: width 0.4s ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+  <!-- Header & Clickable White Logo -->
+  <header class="max-w-4xl mx-auto w-full flex justify-between items-center mb-8">
+    <a href="https://res-va.com/" target="_blank" rel="noopener noreferrer" class="transition hover:opacity-80 flex items-center">
+      <img src="https://res-va.com/wp-content/uploads/2025/07/Res-va-Logo-White.png" alt="RES-VA Logo" class="h-10 md:h-14 w-auto object-contain">
+    </a>
+    <div id="badge-container" class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#005a86]/50 border border-[#34a9df]/30 text-xs font-medium text-slate-200">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      Diagnostic Active
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-3xl mx-auto w-full my-auto">
+    
+    <!-- START SCREEN -->
+    <div id="start-screen" class="glass-card rounded-2xl p-6 md:p-10 text-center shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-[#34a9df]/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[#005a86]/30 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#005a86] border border-[#34a9df]/40 text-white mb-6 shadow-lg shadow-[#005a86]/50">
+        <i class="fa-solid fa-satellite-dish text-2xl text-[#34a9df]"></i>
+      </div>
+
+      <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight mb-4 text-white">
+        Outbound Data & Deliverability Audit
+      </h1>
+      
+      <p class="text-slate-200 text-sm md:text-base max-w-xl mx-auto mb-8 leading-relaxed">
+        Evaluate your tech stack, pipeline automation, and carrier health to stop wasting live sales time across 5 core operational benchmarks.
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 mb-8 text-left max-w-lg mx-auto bg-[#003753]/60 p-4 rounded-xl border border-[#34a9df]/20">
+        <div class="text-center">
+          <div class="text-xs text-slate-300">Criteria</div>
+          <div class="text-lg font-bold text-white">5 Audit Rules</div>
+        </div>
+        <div class="text-center border-x border-[#34a9df]/20">
+          <div class="text-xs text-slate-300">Time</div>
+          <div class="text-lg font-bold text-white">~2 Mins</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xs text-slate-300">Output</div>
+          <div class="text-lg font-bold text-[#34a9df]">Health Score</div>
+        </div>
+      </div>
+
+      <button onclick="startAudit()" class="btn-orange font-semibold py-3.5 px-8 rounded-xl shadow-lg flex items-center justify-center gap-2 mx-auto w-full sm:w-auto">
+        Start Diagnostic Audit
+        <i class="fa-solid fa-arrow-right text-sm"></i>
+      </button>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quiz-screen" class="hidden">
+      <div class="mb-6">
+        <div class="flex justify-between items-center text-xs text-slate-300 mb-2">
+          <span id="question-tracker" class="font-medium">Criterion 1 of 5</span>
+          <span class="text-[#34a9df] font-semibold">1 Point Available</span>
+        </div>
+        <div class="w-full bg-[#003753] rounded-full h-2.5 overflow-hidden border border-[#34a9df]/20">
+          <div id="progress-bar" class="progress-bar-fill bg-gradient-to-r from-[#005a86] to-[#34a9df] h-2.5 rounded-full" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 md:p-8 shadow-2xl relative">
+        <div class="flex items-center justify-between mb-3">
+          <span id="category-tag" class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#34a9df]/20 text-[#34a9df] border border-[#34a9df]/30">
+            Tech Stack Automation
+          </span>
+          <span class="text-xs font-bold text-[#ff914d] bg-[#ff914d]/10 px-2 py-0.5 rounded border border-[#ff914d]/20">
+            Value: 1 Point
+          </span>
+        </div>
+
+        <h2 id="question-title" class="text-lg md:text-xl font-bold mb-4 text-white leading-snug">
+          Question goes here?
+        </h2>
+
+        <div id="options-container" class="space-y-3 mb-6">
+          <!-- Dynamic options populated via JS -->
+        </div>
+
+        <div id="benchmark-box" class="p-4 rounded-xl bg-[#00283c]/80 border border-[#34a9df]/20 flex gap-3 text-sm text-slate-200">
+          <i class="fa-solid fa-chart-line text-[#ff914d] text-lg flex-shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-semibold text-[#ff914d] block mb-0.5 text-xs uppercase tracking-wide">Industry Benchmark</span>
+            <p id="benchmark-text" class="text-xs md:text-sm text-slate-300 leading-relaxed">Benchmark info loading...</p>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="next-btn" onclick="nextQuestion()" disabled class="btn-orange font-semibold py-3 px-6 rounded-xl shadow-md flex items-center gap-2 opacity-50 cursor-not-allowed">
+            Next Criterion
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT & LEAD FORM SCREEN -->
+    <div id="result-screen" class="hidden glass-card rounded-2xl p-6 md:p-10 text-center shadow-2xl relative">
+      
+      <!-- HERO SCORE FOCUS (MAXIMIZED FOCUS SQUARE) -->
+      <div id="result-hero-card" class="p-8 md:p-12 rounded-3xl bg-[#00283c] border-2 border-[#34a9df]/50 mb-6 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-[#34a9df]/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-[#ff914d]/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div id="result-icon-bg" class="inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-4 shadow-2xl border">
+          <i id="result-icon" class="text-5xl"></i>
+        </div>
+
+        <span id="level-badge" class="block w-max mx-auto text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-3 shadow-md">
+          System Diagnostic Score
+        </span>
+
+        <!-- Giant Score Highlight -->
+        <div class="text-6xl md:text-7xl font-black my-3 font-mono tracking-tight text-white drop-shadow-md" id="score-display">
+          0/5 <span class="text-xl font-medium text-slate-300">POINTS</span>
+        </div>
+
+        <h3 id="result-title" class="text-2xl md:text-4xl font-extrabold mb-3 text-white">
+          Diagnostic Title
+        </h3>
+
+        <p id="result-description" class="text-slate-200 text-sm md:text-lg max-w-xl mx-auto leading-relaxed font-normal">
+          Description text goes here...
+        </p>
+      </div>
+
+      <!-- COMPACT RIGHT ANSWERS BREAKDOWN (SUBORDINATE FOCUS) -->
+      <div class="bg-[#001c2b]/60 rounded-xl p-3 md:p-4 border border-[#34a9df]/15 text-left mb-6 max-w-xl mx-auto space-y-2">
+        <h4 class="text-[10px] md:text-xs font-bold text-[#34a9df]/80 uppercase tracking-widest flex items-center justify-between">
+          <span>Criterion Answer Summary</span>
+          <span class="text-slate-400 font-normal">Result</span>
+        </h4>
+        <div id="breakdown-list" class="space-y-1 text-xs">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- LEAD CAPTURE FORM TO FORMSPREE -->
+      <div class="bg-[#003753]/90 rounded-2xl p-6 border border-[#34a9df]/30 max-w-xl mx-auto text-left shadow-lg">
+        <h4 class="text-base font-bold text-white mb-1 text-center">Receive Your Custom Deliverability Roadmap</h4>
+        <p class="text-xs text-slate-300 text-center mb-4">Enter your details below to save your score and receive a detailed breakdown from our team.</p>
+        
+        <form id="lead-form" onsubmit="submitToFormspree(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+            <input type="text" id="user-name" name="Name" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl bg-[#001d2d] border border-[#34a9df]/30 text-white placeholder-slate-500 focus:outline-none focus:border-[#34a9df] text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Email Address</label>
+            <input type="email" id="user-email" name="Email" required placeholder="john@company.com" class="w-full px-4 py-2.5 rounded-xl bg-[#001d2d] border border-[#34a9df]/30 text-white placeholder-slate-500 focus:outline-none focus:border-[#34a9df] text-sm">
+          </div>
+          <button type="submit" id="submit-btn" class="btn-orange font-semibold py-3 px-6 rounded-xl w-full flex items-center justify-center gap-2 text-sm shadow-md">
+            <span>Submit Results</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </form>
+        <div id="form-status" class="hidden mt-3 text-center text-xs font-medium"></div>
+      </div>
+
+      <div class="mt-6">
+        <button onclick="restartAudit()" class="text-xs text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-rotate-left mr-1"></i>Retake Audit
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-4xl mx-auto w-full text-center text-xs text-slate-400 py-4 border-t border-[#34a9df]/20 mt-8">
+    <a href="https://res-va.com/" target="_blank" class="hover:text-white transition">RES-VA</a> &bull; Outbound Data & Deliverability Audit Tool
+  </footer>
+
+  <script>
+    const quizData = [
+      {
+        category: "Contact Enrichment",
+        title: "1. Trigger-Based Re-Skipping",
+        question: "Does your CRM or dialer automatically trigger a fresh skip-trace when a lead reaches a set dial threshold (e.g., 6 unanswered calls) or enters a specific pipeline stage?",
+        benchmark: "If you only skip-trace a lead once at purchase, 20% to 30% of your contact data becomes invalid within 90 days.",
+        options: [
+          { label: "CRM/dialer automatically triggers fresh skip-tracing based on rules", points: 1, pass: true },
+          { label: "Manual skip-tracing or single-time trace at purchase", points: 0, pass: false }
+        ]
+      },
+      {
+        category: "Deliverability",
+        title: "2. Real-Time Carrier Reputation Monitoring",
+        question: "Do you use automated monitoring software that tracks caller ID health across major carriers (AT&T, Verizon, T-Mobile) and alerts you before numbers are flagged as 'Spam Likely'?",
+        benchmark: "Waiting for reps or prospects to notify you about flagged numbers means you've already lost days of connect velocity.",
+        options: [
+          { label: "Automated software continuously monitors and alerts before spam flags occur", points: 1, pass: true },
+          { label: "We rely on reps or prospects telling us when numbers show as spam", points: 0, pass: false }
+        ]
+      },
+      {
+        category: "Phone Management",
+        title: "3. Dynamic Caller ID Rotation",
+        question: "Are flagged phone numbers automatically quarantined and swapped with clean numbers without requiring manual RevOps intervention or rep submission?",
+        benchmark: "Fixed calendar swaps (e.g., rotating every 30 days) either discard clean numbers prematurely or leave burned numbers active for weeks.",
+        options: [
+          { label: "Flagged numbers are quarantined and replaced automatically in real time", points: 1, pass: true },
+          { label: "Fixed calendar rotations or manual replacements by team", points: 0, pass: false }
+        ]
+      },
+      {
+        category: "CRM Automation",
+        title: "4. Automated CRM Dispositioning",
+        question: "When a rep logs 'Disconnected' or 'Wrong Number,' does the system immediately update contact status, remove the number from active queues, and trigger re-validation?",
+        benchmark: "Manual CRM cleanup on live sales blocks costs 10-15 hours of selling time per sales rep every month.",
+        options: [
+          { label: "Automatic status updates, queue removal, and re-validation triggers", points: 1, pass: true },
+          { label: "Reps manually update statuses, queues, or clean up lists later", points: 0, pass: false }
+        ]
+      },
+      {
+        category: "Financial Metrics",
+        title: "5. Lead Decay Budget Cap",
+        question: "Do you actively measure your Data Decay Rate (bad numbers vs. total dials) alongside your Cost Per Lead (CPL) to track true acquisition cost?",
+        benchmark: "Buying 10,000 cheap leads with a 40% decay rate costs more in wasted rep payroll than buying 5,000 verified leads at twice the price.",
+        options: [
+          { label: "Data Decay Rate is tracked alongside CPL for true acquisition metrics", points: 1, pass: true },
+          { label: "We only track Cost Per Lead (CPL) without measuring decay impact", points: 0, pass: false }
+        ]
+      }
+    ];
+
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/xkjnkzqd";
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let userAnswers = [];
+    let selectedOpt = null;
+
+    function startAudit() {
+      document.getElementById("start-screen").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      currentQuestionIndex = 0;
+      score = 0;
+      userAnswers = [];
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = quizData[currentQuestionIndex];
+      document.getElementById("question-tracker").innerText = `Criterion ${currentQuestionIndex + 1} of ${quizData.length}`;
+      document.getElementById("progress-bar").style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
+      
+      document.getElementById("category-tag").innerText = q.category;
+      document.getElementById("question-title").innerText = q.title;
+      document.getElementById("benchmark-text").innerText = q.benchmark;
+
+      const container = document.getElementById("options-container");
+      container.innerHTML = "";
+
+      const nextBtn = document.getElementById("next-btn");
+      nextBtn.disabled = true;
+      nextBtn.classList.add("opacity-50", "cursor-not-allowed");
+
+      q.options.forEach((opt, idx) => {
+        const button = document.createElement("button");
+        button.className = "w-full text-left p-4 rounded-xl border border-[#34a9df]/20 bg-[#002d44]/60 hover:bg-[#003753] transition flex items-center justify-between group";
+        button.onclick = () => selectOption(idx, opt);
+        
+        button.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-5 h-5 rounded-full border border-slate-400 flex items-center justify-center group-hover:border-[#34a9df] option-radio">
+              <div class="w-2.5 h-2.5 rounded-full bg-[#34a9df] hidden"></div>
+            </div>
+            <span class="text-sm font-medium text-slate-100">${opt.label}</span>
+          </div>
+        `;
+        container.appendChild(button);
+      });
+    }
+
+    function selectOption(index, option) {
+      selectedOpt = option;
+      const options = document.getElementById("options-container").children;
+      for (let i = 0; i < options.length; i++) {
+        const btn = options[i];
+        const radioDot = btn.querySelector('.option-radio div');
+        const radioCircle = btn.querySelector('.option-radio');
+        
+        if (i === index) {
+          btn.classList.add('border-[#34a9df]', 'bg-[#00476a]');
+          btn.classList.remove('border-[#34a9df]/20', 'bg-[#002d44]/60');
+          radioDot.classList.remove('hidden');
+          radioCircle.classList.add('border-[#34a9df]');
+        } else {
+          btn.classList.remove('border-[#34a9df]', 'bg-[#00476a]');
+          btn.classList.add('border-[#34a9df]/20', 'bg-[#002d44]/60');
+          radioDot.classList.add('hidden');
+          radioCircle.classList.remove('border-[#34a9df]');
+        }
+      }
+
+      const nextBtn = document.getElementById("next-btn");
+      nextBtn.disabled = false;
+      nextBtn.classList.remove("opacity-50", "cursor-not-allowed");
+    }
+
+    function nextQuestion() {
+      if (!selectedOpt) return;
+      
+      score += selectedOpt.points;
+      userAnswers.push({
+        title: quizData[currentQuestionIndex].title,
+        passed: selectedOpt.pass
+      });
+
+      selectedOpt = null;
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+
+      const title = document.getElementById("result-title");
+      const desc = document.getElementById("result-description");
+      const badge = document.getElementById("level-badge");
+      const iconBg = document.getElementById("result-icon-bg");
+      const icon = document.getElementById("result-icon");
+      const scoreDisplay = document.getElementById("score-display");
+
+      scoreDisplay.innerText = `${score}/5 POINTS`;
+
+      if (score >= 4) {
+        badge.className = "block w-max mx-auto text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+        badge.innerText = "Level 3 (High-Velocity Engine)";
+        title.innerText = "Data Hygiene Fully Automated";
+        desc.innerText = "Your outbound sales tech stack is tightly integrated and resilient. Reps maximize live conversation time with minimal operational drag.";
+        iconBg.className = "inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-4 shadow-2xl bg-emerald-500/20 border-2 border-emerald-500/40 text-emerald-400";
+        icon.className = "fa-solid fa-rocket";
+      } else if (score >= 2) {
+        badge.className = "block w-max mx-auto text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-3 bg-[#ff914d]/20 text-[#ff914d] border border-[#ff914d]/40";
+        badge.innerText = "Level 2 (Moderate Drag)";
+        title.innerText = "15%-20% Rep Capacity Lost";
+        desc.innerText = "You have basic processes in place, but static phone management and manual updates are slowing down sales velocity and inflating costs.";
+        iconBg.className = "inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-4 shadow-2xl bg-[#ff914d]/20 border-2 border-[#ff914d]/40 text-[#ff914d]";
+        icon.className = "fa-solid fa-triangle-exclamation";
+      } else {
+        badge.className = "block w-max mx-auto text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-3 bg-rose-500/20 text-rose-400 border border-rose-500/40";
+        badge.innerText = "Level 1 (Critical Leak)";
+        title.innerText = ">50% Lead Budget & Payroll Wasted";
+        desc.innerText = "Over half of your lead budget and rep selling hours go toward manual data cleanup, calling burned caller IDs, and obsolete contact data.";
+        iconBg.className = "inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-4 shadow-2xl bg-rose-500/20 border-2 border-rose-500/40 text-rose-400";
+        icon.className = "fa-solid fa-plug-circle-xmark";
+      }
+
+      // Compact Answer Breakdown Rendering
+      const list = document.getElementById("breakdown-list");
+      list.innerHTML = "";
+      userAnswers.forEach((ans) => {
+        const item = document.createElement("div");
+        item.className = "flex items-center justify-between py-1 border-b border-[#34a9df]/10 last:border-0";
+        item.innerHTML = `
+          <div class="flex items-center gap-2 truncate pr-2">
+            <i class="fa-solid ${ans.passed ? 'fa-circle-check text-emerald-400 text-xs' : 'fa-circle-xmark text-rose-400 text-xs'} flex-shrink-0"></i>
+            <span class="text-slate-300 font-medium text-xs truncate">${ans.title}</span>
+          </div>
+          <span class="font-bold text-[11px] flex-shrink-0 ${ans.passed ? 'text-emerald-400' : 'text-slate-500'}">
+            ${ans.passed ? '+1 Pt' : '0 Pt'}
+          </span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function submitToFormspree(e) {
+      e.preventDefault();
+      const name = document.getElementById("user-name").value;
+      const email = document.getElementById("user-email").value;
+      const statusDiv = document.getElementById("form-status");
+      const submitBtn = document.getElementById("submit-btn");
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending...";
+
+      const data = new FormData();
+      data.append("Name", name);
+      data.append("Email", email);
+      data.append("Diagnostic Score", `${score}/5 Points`);
+
+      fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        body: data,
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(response => {
+        if (response.ok) {
+          statusDiv.classList.remove("hidden", "text-rose-400");
+          statusDiv.classList.add("text-emerald-400");
+          statusDiv.innerText = "✓ Results submitted successfully! We will be in touch.";
+          submitBtn.innerText = "Submitted!";
+        } else {
+          throw new Error('Submission failed');
+        }
+      }).catch(err => {
+        statusDiv.classList.remove("hidden", "text-emerald-400");
+        statusDiv.classList.add("text-rose-400");
+        statusDiv.innerText = "Error submitting results. Please try again.";
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Results";
+      });
+    }
+
+    function restartAudit() {
+      document.getElementById("result-screen").classList.add("hidden");
+      startAudit();
+    }
+  </script>
+</body>
+</html>
